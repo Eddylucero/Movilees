@@ -7,12 +7,12 @@ class DatabaseConnection {
 
   DatabaseConnection._internal();
 
-  static Database? _database;
+  static Database? database;
 
   Future<Database> get db async {
-    if (_database != null) return _database!;
-    _database = await _initDb();
-    return _database!;
+    if (database != null) return database!;
+    database = await _initDb();
+    return database!;
   }
 
   Future<Database> _initDb() async {
