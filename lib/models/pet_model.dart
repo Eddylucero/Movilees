@@ -2,10 +2,10 @@ class MascotaModel {
   int? mascId;
   String mascNombre;
   String mascEspecie;
-  String? mascSexo;
-  String? mascFechaNacimiento; // YYYY-MM-DD
-  String? mascColor;
-  double? mascPeso;
+  String mascSexo;
+  String mascFechaNacimiento; // YYYY-MM-DD
+  String mascColor;
+  double mascPeso;
   int dueId; // FK → Dueño
 
   // Constructor
@@ -13,10 +13,10 @@ class MascotaModel {
     this.mascId,
     required this.mascNombre,
     required this.mascEspecie,
-    this.mascSexo,
-    this.mascFechaNacimiento,
-    this.mascColor,
-    this.mascPeso,
+    required this.mascSexo,
+    required this.mascFechaNacimiento,
+    required this.mascColor,
+    required this.mascPeso,
     required this.dueId,
   });
 
@@ -29,9 +29,8 @@ class MascotaModel {
       mascSexo: data['masc_sexo'],
       mascFechaNacimiento: data['masc_fecha_nacimiento'],
       mascColor: data['masc_color'],
-      mascPeso: data['masc_peso'] != null
-          ? (data['masc_peso'] as num).toDouble()
-          : null,
+      mascPeso: data['masc_peso'] ,
+
       dueId: data['due_id'],
     );
   }
