@@ -84,7 +84,7 @@ class _PetFormScreenState extends State<PetFormScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               TextFormField(
                 controller: especieController,
@@ -97,7 +97,7 @@ class _PetFormScreenState extends State<PetFormScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               TextFormField(
                 controller: sexoController,
@@ -110,7 +110,7 @@ class _PetFormScreenState extends State<PetFormScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               TextFormField(
                 controller: nacimientoController,
@@ -136,7 +136,7 @@ class _PetFormScreenState extends State<PetFormScreen> {
                   }
                 },
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               TextFormField(
                 controller: colorController,
@@ -149,7 +149,7 @@ class _PetFormScreenState extends State<PetFormScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               TextFormField(
                 controller: pesoController,
@@ -163,7 +163,7 @@ class _PetFormScreenState extends State<PetFormScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               cargandoDuenos
                   ? const Center(child: CircularProgressIndicator())

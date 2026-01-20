@@ -54,9 +54,8 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
           key: formVet,
           child: Column(
             children: [
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Nombre
               TextFormField(
                 controller: nombreController,
                 validator: (value) {
@@ -75,9 +74,8 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Especialidad
               TextFormField(
                 controller: especialidadController,
                 decoration: InputDecoration(
@@ -90,9 +88,8 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Teléfono
               TextFormField(
                 controller: telefonoController,
                 keyboardType: TextInputType.phone,
@@ -106,9 +103,8 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Email
               TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -122,9 +118,8 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Clínica
               TextFormField(
                 controller: clinicaController,
                 decoration: InputDecoration(
@@ -137,9 +132,8 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
-              // Botones
               Row(
                 children: [
                   Expanded(
@@ -180,7 +174,7 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                     ),
                   ),
 
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
 
                   Expanded(
                     child: Container(

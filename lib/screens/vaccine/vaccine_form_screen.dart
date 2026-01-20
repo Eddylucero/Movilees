@@ -79,9 +79,8 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
           key: formVacuna,
           child: ListView(
             children: [
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Nombre vacuna
               TextFormField(
                 controller: nombreController,
                 validator: (value) {
@@ -99,9 +98,8 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Fecha
               TextFormField(
                 controller: fechaController,
                 validator: (value) {
@@ -120,9 +118,8 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Mascota
               DropdownButtonFormField<int>(
                 value: mascotaSeleccionada,
                 items: mascotas.map((m) {
@@ -147,9 +144,8 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Veterinario
               DropdownButtonFormField<int>(
                 value: veterinarioSeleccionado,
                 items: veterinarios.map((v) {
@@ -174,9 +170,8 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Dosis
               TextFormField(
                 controller: dosisController,
                 decoration: InputDecoration(
@@ -188,9 +183,8 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
-              // Observaciones
               TextFormField(
                 controller: observacionesController,
                 maxLines: 3,
@@ -203,9 +197,8 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
-              // Botones
               Row(
                 children: [
                   Expanded(
@@ -246,7 +239,9 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+
+                  SizedBox(width: 10),
+
                   Expanded(
                     child: Container(
                       height: 50,
