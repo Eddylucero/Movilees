@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Material App',
-      initialRoute: '/pet/form',
+      initialRoute: '/home',
       routes: {
-        '/': (context) => const HomeScreen(),
+        '/home': (context) => const HomeScreen(),
         '/owner': (context) => const OwnerScreen(),
         '/owner/form': (context) => const OwnerFormScreen(),
         '/pet': (context) => const PetScreen(),

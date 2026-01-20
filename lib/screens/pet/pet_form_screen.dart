@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../models/pet_model.dart';
+import '../../models/owner_model.dart';
 import '../../repositories/pet_repository.dart';
+import '../../repositories/owner_repository.dart';
 
 class PetFormScreen extends StatefulWidget {
   const PetFormScreen({super.key});
@@ -12,16 +14,34 @@ class PetFormScreen extends StatefulWidget {
 
 class _PetFormScreenState extends State<PetFormScreen> {
   final formMascota = GlobalKey<FormState>();
+
   final nombreController = TextEditingController();
   final especieController = TextEditingController();
   final sexoController = TextEditingController();
   final nacimientoController = TextEditingController();
   final colorController = TextEditingController();
   final pesoController = TextEditingController();
-  final duenoController = TextEditingController();
 
-  //EDICOON
+  final MascotaRepository mascotaRepo = MascotaRepository();
+  final OwnerRepository duenoRepo = OwnerRepository();
+
   MascotaModel? mascota;
+
+  List<OwnerModel> duenos = [];
+  int? duenoSeleccionado;
+  bool cargandoDuenos = true;
+
+  @override
+  void initState() {
+    super.initState();
+    cargarDuenos();
+  }
+
+  Future<void> cargarDuenos() async {
+    duenos = await duenoRepo.getAll();
+    setState(() => cargandoDuenos = false);
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -34,236 +54,186 @@ class _PetFormScreenState extends State<PetFormScreen> {
       sexoController.text = mascota!.mascSexo;
       nacimientoController.text = mascota!.mascFechaNacimiento;
       colorController.text = mascota!.mascColor;
-      //pesoController.text = mascota!.mascPeso;
       pesoController.text = mascota!.mascPeso.toString();
-      //duenoController.text = mascota!.dueId;
-      duenoController.text = mascota!.dueId.toString();
+      duenoSeleccionado = mascota!.dueId;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final esEditar = mascota != null;
+
     return Scaffold(
-      appBar: AppBar(title: Text("Nueva Mascota")),
+      appBar: AppBar(
+        title: Text(esEditar ? 'Editar Mascota' : 'Nueva Mascota'),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10),
         child: Form(
-          child: Column(
+          key: formMascota,
+          child: ListView(
             children: [
               TextFormField(
                 controller: nombreController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "El campo es requerido";
-                  }
-                  return null;
-                },
+                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
                 decoration: InputDecoration(
-                  labelText: 'Nombre de la mascota',
-                  hintText: 'Ingrese el nombre de la mascota',
-                  prefixIcon: Icon(Icons.pets),
+                  labelText: 'Nombre',
+                  prefixIcon: const Icon(Icons.pets),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               TextFormField(
                 controller: especieController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "El campo es requerido";
-                  }
-                  return null;
-                },
+                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
                 decoration: InputDecoration(
-                  labelText: 'Especie de la mascota',
-                  hintText: 'Ingrese la especie de la mascota',
-                  prefixIcon: Icon(Icons.pets),
+                  labelText: 'Especie',
+                  prefixIcon: const Icon(Icons.pets),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+
               TextFormField(
                 controller: sexoController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "El campo es requerido";
-                  }
-                  return null;
-                },
+                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
                 decoration: InputDecoration(
-                  labelText: 'Sexo de la mascota',
-                  hintText: 'Ingrese el sexo de la mascota',
-                  prefixIcon: Icon(Icons.pets),
+                  labelText: 'Sexo',
+                  prefixIcon: const Icon(Icons.pets),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              /*
-              TextFormField(
-                controller: nacimientoController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "El campo es requerido";
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Fecha de nacimiento de la mascota',
-                  hintText: 'Ingrese la fecha de la mascota',
-                  prefixIcon: Icon(Icons.pets),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),*/
               TextFormField(
                 controller: nacimientoController,
                 readOnly: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "El campo es requerido";
-                  }
-                  return null;
-                },
+                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
                 decoration: InputDecoration(
-                  labelText: 'Fecha de nacimiento de la mascota',
-                  hintText: 'Seleccione la fecha',
-                  prefixIcon: Icon(Icons.pets),
-                  suffixIcon: Icon(Icons.calendar_today),
+                  labelText: 'Fecha de nacimiento',
+                  suffixIcon: const Icon(Icons.calendar_today),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
                 onTap: () async {
-                  DateTime? fechaSeleccionada = await showDatePicker(
+                  final fecha = await showDatePicker(
                     context: context,
                     initialDate: DateTime.now(),
                     firstDate: DateTime(1990),
                     lastDate: DateTime.now(),
                   );
-
-                  if (fechaSeleccionada != null) {
+                  if (fecha != null) {
                     nacimientoController.text =
-                        "${fechaSeleccionada.day.toString().padLeft(2, '0')}/"
-                        "${fechaSeleccionada.month.toString().padLeft(2, '0')}/"
-                        "${fechaSeleccionada.year}";
+                        '${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-${fecha.day.toString().padLeft(2, '0')}';
                   }
                 },
               ),
+              const SizedBox(height: 10),
 
-              SizedBox(height: 10),
               TextFormField(
                 controller: colorController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "El campo es requerido";
-                  }
-                  return null;
-                },
+                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
                 decoration: InputDecoration(
-                  labelText: 'Color de la mascota',
-                  hintText: 'Ingrese el color de la mascota',
-                  prefixIcon: Icon(Icons.pets),
+                  labelText: 'Color',
+                  prefixIcon: const Icon(Icons.palette),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+
               TextFormField(
                 controller: pesoController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "El campo es requerido";
-                  }
-                  return null;
-                },
+                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Peso de la mascota',
-                  hintText: 'Ingrese el peso de la mascota',
-                  prefixIcon: Icon(Icons.pets),
+                  labelText: 'Peso',
+                  prefixIcon: const Icon(Icons.monitor_weight),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: duenoController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "El campo es requerido";
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Dueño de la mascota',
-                  hintText: 'Ingrese el dueño de la mascota',
-                  prefixIcon: Icon(Icons.pets),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+
+              cargandoDuenos
+                  ? const Center(child: CircularProgressIndicator())
+                  : DropdownButtonFormField<int>(
+                      value: duenoSeleccionado,
+                      items: duenos
+                          .map(
+                            (d) => DropdownMenuItem<int>(
+                              value: d.dueId,
+                              child: Text(d.dueNombre),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() => duenoSeleccionado = value);
+                      },
+                      validator: (v) =>
+                          v == null ? 'Seleccione un dueño' : null,
+                      decoration: InputDecoration(
+                        labelText: 'Dueño',
+                        prefixIcon: const Icon(Icons.person),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    ),
+              const SizedBox(height: 20),
+
               Row(
                 children: [
                   Expanded(
                     child: TextButton(
                       onPressed: () async {
                         if (formMascota.currentState!.validate()) {
-                          //almacenar los datos
-                          final repo = MascotaRepository();
-                          final mascotaEditar = MascotaModel(
+                          final data = MascotaModel(
                             mascNombre: nombreController.text,
-                            mascEspecie: nombreController.text,
+                            mascEspecie: especieController.text,
                             mascSexo: sexoController.text,
                             mascFechaNacimiento: nacimientoController.text,
                             mascColor: colorController.text,
-                            //mascPeso: pesoController.text,
                             mascPeso: double.parse(pesoController.text),
-                            //dueId: duenoController.text,
-                            dueId: int.parse(duenoController.text),
+                            dueId: duenoSeleccionado!,
                           );
-                          //el await se coloca cuando yo llamo a una fucnion asincrona
-                          /*edicion*/
+
                           if (esEditar) {
-                            mascotaEditar.mascId = mascota!.mascId;
-                            await repo.edit(mascotaEditar);
+                            data.mascId = mascota!.mascId;
+                            await mascotaRepo.edit(data);
                           } else {
-                            await repo.create(mascotaEditar);
+                            await mascotaRepo.create(data);
                           }
-                          // muestra la interfaz de listado
+
+                          Navigator.pop(context);
                         }
-                        Navigator.pop(context);
                       },
-                      child: Text("Guardar"),
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                       ),
+                      child: const Text('Guardar'),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("Cancelar"),
+                      onPressed: () => Navigator.pop(context),
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                       ),
+                      child: const Text('Cancelar'),
                     ),
                   ),
                 ],
