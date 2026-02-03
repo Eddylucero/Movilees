@@ -5,7 +5,6 @@ import 'screens/owner/owner_form_screen.dart';
 import 'screens/owner/owner_screen.dart';
 import 'screens/pet/pet_form_screen.dart';
 import 'screens/pet/pet_screen.dart';
-import 'screens/splash/splash_screen.dart';
 import 'screens/vaccine/vaccine_form_screen.dart';
 import 'screens/vaccine/vaccine_screen.dart';
 import 'screens/veterinarian/veterinarian_form_screen.dart';
@@ -20,9 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Material App',
-      initialRoute: '/splash',
+      initialRoute: '/home',
       routes: {
-        '/splash': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
         '/owner': (context) => const OwnerScreen(),
         '/owner/form': (context) => const OwnerFormScreen(),
