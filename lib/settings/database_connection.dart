@@ -11,18 +11,19 @@ class DatabaseConnection {
 
   Future<Database> get db async {
     if (database != null) return database!;
-    database = await _initDb();
+    database = await inicializarDb();
     return database!;
   }
 
-  Future<Database> _initDb() async {
-    final path = join(await getDatabasesPath(), 'veterinaria.db');
+  Future<Database> inicializarDb() async {
+    final rutaDb = await getDatabasesPath();
+    final rutaFinal = join(rutaDb, 'veterinaria.db');
 
     return await openDatabase(
-      path,
+      rutaFinal,
       version: 1,
+      // AQUI SE ACTIVAN CLAVES FORÁNEAS
       onConfigure: (Database db) async {
-        // ACTIVAR CLAVES FORÁNEAS
         await db.execute('PRAGMA foreign_keys = ON');
       },
       onCreate: (Database db, int version) async {
@@ -41,13 +42,12 @@ class DatabaseConnection {
         // MASCOTA
         await db.execute('''
           CREATE TABLE mascota (
-            masc_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            masc_nombre TEXT NOT NULL,
-            masc_especie TEXT NOT NULL,
-            masc_sexo TEXT,
-            masc_fecha_nacimiento TEXT,
-            masc_color TEXT,
-            masc_peso REAL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            especie TEXT NOT NULL,
+            sexo TEXT NOT NULL,  
+            color TEXT NOT NULL,
+            peso REAL NOT NULL,
             due_id INTEGER NOT NULL,
             FOREIGN KEY (due_id) REFERENCES dueno(due_id)
               ON DELETE CASCADE
@@ -60,9 +60,9 @@ class DatabaseConnection {
           CREATE TABLE veterinario (
             vet_id INTEGER PRIMARY KEY AUTOINCREMENT,
             vet_nombre TEXT NOT NULL,
-            vet_especialidad TEXT,
-            vet_telefono TEXT,
-            vet_email TEXT,
+            vet_especialidad TEXT NOT NULL,
+            vet_telefono TEXT NOT NULL,
+            vet_email TEXT NOT NULL,
             vet_clinica TEXT
           )
         ''');
@@ -72,16 +72,15 @@ class DatabaseConnection {
           CREATE TABLE vacuna (
             vac_id INTEGER PRIMARY KEY AUTOINCREMENT,
             vac_nombre TEXT NOT NULL,
-            vac_fecha_aplicacion TEXT NOT NULL,
-            vac_dosis TEXT,
+            vac_dosis INTEGER NOT NULL,
             vac_observaciones TEXT,
             masc_id INTEGER NOT NULL,
             vet_id INTEGER NOT NULL,
-            FOREIGN KEY (masc_id) REFERENCES mascota(masc_id)
+            FOREIGN KEY (masc_id) REFERENCES mascota(id)
               ON DELETE CASCADE
               ON UPDATE CASCADE,
             FOREIGN KEY (vet_id) REFERENCES veterinario(vet_id)
-              ON DELETE SET NULL
+              ON DELETE CASCADE           
               ON UPDATE CASCADE
           )
         ''');

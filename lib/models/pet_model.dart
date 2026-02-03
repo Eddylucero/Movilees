@@ -1,50 +1,51 @@
-class MascotaModel {
-  int? mascId;
-  String mascNombre;
-  String mascEspecie;
-  String mascSexo;
-  String mascFechaNacimiento; // YYYY-MM-DD
-  String mascColor;
-  double mascPeso;
-  int dueId; // FK → Dueño
 
-  // Constructor
+
+class MascotaModel {
+  int? id;
+  String nombre;
+  String especie;
+  String sexo;
+  //String fechaNacimiento;
+  String color;
+  double peso;
+  int dueId;
+ // OwnerModel? dueno;
+
   MascotaModel({
-    this.mascId,
-    required this.mascNombre,
-    required this.mascEspecie,
-    required this.mascSexo,
-    required this.mascFechaNacimiento,
-    required this.mascColor,
-    required this.mascPeso,
+    this.id,
+    required this.nombre,
+    required this.especie,
+    required this.sexo,
+    // required this.fechaNacimiento,
+    required this.color,
+    required this.peso,
     required this.dueId,
+   // this.dueno,
   });
 
-  // Convertir de Map a Clase (SELECT)
   factory MascotaModel.fromMap(Map<String, dynamic> data) {
     return MascotaModel(
-      mascId: data['masc_id'],
-      mascNombre: data['masc_nombre'],
-      mascEspecie: data['masc_especie'],
-      mascSexo: data['masc_sexo'],
-      mascFechaNacimiento: data['masc_fecha_nacimiento'],
-      mascColor: data['masc_color'],
-      mascPeso: data['masc_peso'] ,
-
+      id: data['id'],
+      nombre: data['nombre'],
+      especie: data['especie'],
+      sexo: data['sexo'],
+      //fechaNacimiento: data['fecha_nacimiento'],
+      color: data['color'],
+      peso: (data['peso'] as num).toDouble(),
       dueId: data['due_id'],
+      //dueno: data['dueno'] != null ? OwnerModel.fromMap(data['dueno']) : null,
     );
   }
 
-  // Convertir de Clase a Map (INSERT, UPDATE)
   Map<String, dynamic> toMap() {
     return {
-      'masc_id': mascId,
-      'masc_nombre': mascNombre,
-      'masc_especie': mascEspecie,
-      'masc_sexo': mascSexo,
-      'masc_fecha_nacimiento': mascFechaNacimiento,
-      'masc_color': mascColor,
-      'masc_peso': mascPeso,
+      'id': id,
+      'nombre': nombre,
+      'especie': especie,
+      'sexo': sexo,
+      // 'fecha_nacimiento': fechaNacimiento,
+      'color': color,
+      'peso': peso,
       'due_id': dueId,
     };
   }

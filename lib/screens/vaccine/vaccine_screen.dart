@@ -58,14 +58,14 @@ class _VaccineScreenState extends State<VaccineScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Listado de Vacunas'),
+        title: Text('Listado de Vacunas'),
         backgroundColor: Colors.cyan,
         foregroundColor: Colors.white,
       ),
       body: cargando
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : vacunas.isEmpty
-          ? const Center(child: Text('No hay vacunas registradas'))
+          ? Center(child: Text('No hay vacunas registradas'))
           : ListView.builder(
               itemCount: vacunas.length,
               itemBuilder: (context, i) {
@@ -76,7 +76,7 @@ class _VaccineScreenState extends State<VaccineScreen> {
                     child: ListTile(
                       leading: const Icon(Icons.vaccines),
                       title: Text(vac.vacNombre),
-                      subtitle: Text('Fecha: ${vac.vacFechaAplicacion}'),
+                      subtitle: Text('Dosis: ${vac.vacDosis}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -107,7 +107,7 @@ class _VaccineScreenState extends State<VaccineScreen> {
           await Navigator.pushNamed(context, '/vaccine/form');
           cargarVacunas();
         },
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.teal,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, color: Colors.white),
       ),

@@ -1,8 +1,7 @@
 class VacunaModel {
   int? vacId;
   String vacNombre;
-  String vacFechaAplicacion; // YYYY-MM-DD
-  String? vacDosis;
+  int vacDosis;
   String? vacObservaciones;
   int mascId; // FK → Mascota
   int vetId; // FK → Veterinario
@@ -11,8 +10,7 @@ class VacunaModel {
   VacunaModel({
     this.vacId,
     required this.vacNombre,
-    required this.vacFechaAplicacion,
-    this.vacDosis,
+    required this.vacDosis,
     this.vacObservaciones,
     required this.mascId,
     required this.vetId,
@@ -23,7 +21,6 @@ class VacunaModel {
     return VacunaModel(
       vacId: data['vac_id'],
       vacNombre: data['vac_nombre'],
-      vacFechaAplicacion: data['vac_fecha_aplicacion'],
       vacDosis: data['vac_dosis'],
       vacObservaciones: data['vac_observaciones'],
       mascId: data['masc_id'],
@@ -36,7 +33,6 @@ class VacunaModel {
     return {
       'vac_id': vacId,
       'vac_nombre': vacNombre,
-      'vac_fecha_aplicacion': vacFechaAplicacion,
       'vac_dosis': vacDosis,
       'vac_observaciones': vacObservaciones,
       'masc_id': mascId,

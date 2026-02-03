@@ -2,18 +2,18 @@ class OwnerModel {
   int? dueId;
   String dueNombre;
   String dueCedula;
-  String? dueTelefono;
-  String? dueDireccion;
-  String? dueEmail;
+  String dueTelefono;
+  String dueDireccion;
+  String dueEmail;
 
   // Constructor
   OwnerModel({
     this.dueId,
     required this.dueNombre,
     required this.dueCedula,
-    this.dueTelefono,
-    this.dueDireccion,
-    this.dueEmail,
+    required this.dueTelefono,
+    required this.dueDireccion,
+    required this.dueEmail,
   });
 
   // Convertir de Map a Clase (SELECT)

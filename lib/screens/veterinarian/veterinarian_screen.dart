@@ -59,7 +59,7 @@ class _VeterinarianScreenState extends State<VeterinarianScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Listado de Veterinarios'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.cyan,
         foregroundColor: Colors.white,
       ),
       body: cargando
@@ -76,7 +76,7 @@ class _VeterinarianScreenState extends State<VeterinarianScreen> {
                     child: ListTile(
                       leading: const Icon(Icons.medical_services),
                       title: Text(vet.vetNombre),
-                      subtitle: Text(vet.vetEspecialidad ?? 'Sin especialidad'),
+                      subtitle: Text(vet.vetEspecialidad),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

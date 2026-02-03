@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/owner_model.dart';
 import '../../repositories/owner_repository.dart';
+import '../widgets/custom_text_form_field.dart';
 
 class OwnerFormScreen extends StatefulWidget {
   const OwnerFormScreen({super.key});
@@ -12,7 +13,6 @@ class OwnerFormScreen extends StatefulWidget {
 
 class _OwnerFormScreenState extends State<OwnerFormScreen> {
   final formOwner = GlobalKey<FormState>();
-
   final nombreController = TextEditingController();
   final cedulaController = TextEditingController();
   final telefonoController = TextEditingController();
@@ -25,14 +25,13 @@ class _OwnerFormScreenState extends State<OwnerFormScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)!.settings.arguments;
-
     if (args != null) {
       owner = args as OwnerModel;
       nombreController.text = owner!.dueNombre;
       cedulaController.text = owner!.dueCedula;
-      telefonoController.text = owner!.dueTelefono ?? '';
-      direccionController.text = owner!.dueDireccion ?? '';
-      emailController.text = owner!.dueEmail ?? '';
+      telefonoController.text = owner!.dueTelefono;
+      direccionController.text = owner!.dueDireccion;
+      emailController.text = owner!.dueEmail;
     }
   }
 
@@ -42,7 +41,7 @@ class _OwnerFormScreenState extends State<OwnerFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(esEditar ? 'Editar Dueño' : 'Formulario de Dueño'),
+        title: Text(esEditar ? 'Editar Dueño' : 'Registrar Dueño'),
         backgroundColor: Colors.cyan,
         foregroundColor: Colors.white,
       ),
@@ -50,153 +49,191 @@ class _OwnerFormScreenState extends State<OwnerFormScreen> {
         padding: const EdgeInsets.all(20),
         child: Form(
           key: formOwner,
-          child: Column(
+          child: ListView(
+            padding: const EdgeInsets.all(16),
             children: [
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: nombreController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'El nombre es requerido';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Nombre',
-                  hintText: 'Ingrese el nombre del dueño',
-                  prefixIcon: const Icon(Icons.person),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: cedulaController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'La cédula es requerida';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Cédula',
-                  hintText: 'Ingrese la cédula',
-                  prefixIcon: const Icon(Icons.badge),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: telefonoController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: 'Teléfono',
-                  hintText: 'Ingrese el teléfono',
-                  prefixIcon: const Icon(Icons.phone),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: direccionController,
-                decoration: InputDecoration(
-                  labelText: 'Dirección',
-                  hintText: 'Ingrese la dirección',
-                  prefixIcon: const Icon(Icons.home),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'correo@ejemplo.com',
-                  prefixIcon: const Icon(Icons.email),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 20),
-
-              Row(
+              Column(
                 children: [
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: TextButton(
-                        onPressed: () async {
-                          if (formOwner.currentState!.validate()) {
-                            final repo = OwnerRepository();
+                  SizedBox(height: 15),
 
-                            final data = OwnerModel(
-                              dueNombre: nombreController.text,
-                              dueCedula: cedulaController.text,
-                              dueTelefono: telefonoController.text,
-                              dueDireccion: direccionController.text,
-                              dueEmail: emailController.text,
-                            );
+                  CustomTextFormField(
+                    label: 'Nombre Completo',
+                    controller: nombreController,
+                    icon: Icons.person,
+                    keyboardType: TextInputType.text,
 
-                            if (esEditar) {
-                              data.dueId = owner!.dueId;
-                              await repo.edit(data);
-                            } else {
-                              await repo.create(data);
-                            }
-
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Text(
-                          'Aceptar',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
+                    hintText: 'Juan Gonzáles',
+                    requerido: true,
+                    minlongitud: 5,
+                    maxlongitud: 40,
+                    letras: true,
                   ),
 
-                  const SizedBox(width: 10),
+                  SizedBox(height: 15),
 
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          'Cancelar',
-                          style: TextStyle(color: Colors.white),
+                  CustomTextFormField(
+                    label: 'Cédula',
+                    controller: cedulaController,
+                    icon: Icons.card_membership_outlined,
+                    keyboardType: TextInputType.number,
+                    longitud: 10,
+                    hintText: '0999999999',
+                    requerido: true,
+                  ),
+
+                  SizedBox(height: 15),
+
+                  CustomTextFormField(
+                    label: 'Teléfono',
+                    controller: telefonoController,
+                    icon: Icons.phone,
+                    keyboardType: TextInputType.number,
+                    longitud: 10,
+                    hintText: '0969587458',
+                    requerido: true,
+                  ),
+
+                  SizedBox(height: 15),
+
+                  CustomTextFormField(
+                    label: 'Dirección Domiciliaria',
+                    controller: direccionController,
+                    icon: Icons.home,
+                    hintText: 'Quito',
+                    requerido: true,
+                    minlongitud: 5,
+                    maxlongitud: 40,
+                  ),
+                  SizedBox(height: 15),
+                  CustomTextFormField(
+                    label: 'Email',
+                    controller: emailController,
+                    icon: Icons.email_rounded,
+                    keyboardType: TextInputType.emailAddress,
+                    hintText: 'correo@gmail.com',
+                    requerido: true,
+                    minlongitud: 5,
+                    maxlongitud: 40,
+                  ),
+                  SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: TextButton(
+                            onPressed: () async {
+                              if (formOwner.currentState!.validate()) {
+                                final repo = OwnerRepository();
+                                final data = OwnerModel(
+                                  dueNombre: nombreController.text,
+                                  dueCedula: cedulaController.text,
+                                  dueTelefono: telefonoController.text,
+                                  dueDireccion: direccionController.text,
+                                  dueEmail: emailController.text,
+                                );
+                                if (esEditar) {
+                                  final esUnicaEditar = await repo
+                                      .cedulaUnicaEditar(
+                                        cedulaController.text,
+                                        owner!.dueId!,
+                                      );
+
+                                  if (!esUnicaEditar) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Error'),
+                                        content: const Text(
+                                          'Ya existe un dueño con esta cédula',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: const Text('Aceptar'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  data.dueId = owner!.dueId;
+                                  await repo.edit(data);
+                                } else {
+                                  final cedula = cedulaController.text;
+                                  final celular = telefonoController.text;
+                                  final email = emailController.text;
+                                  final esUnica = await repo.cedulaUnica(
+                                    cedula,
+                                  );
+                                  final celularUnico = await repo.celularUnico(
+                                    celular,
+                                    owner!.dueId!,
+                                  );
+                                  final correoUnico = await repo.correoUnico(
+                                    email,
+                                    owner!.dueId!,
+                                  );
+                                  if (!esUnica) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text('Error'),
+                                        content: Text(
+                                          'Ya existe un dueño con esta cédula',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Aceptar'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  await repo.create(data);
+                                }
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: const Text(
+                              'Aceptar',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+
+                      const SizedBox(width: 10),
+
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              'Cancelar',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

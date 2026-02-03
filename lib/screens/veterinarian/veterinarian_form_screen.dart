@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/veterinarian_model.dart';
 import '../../repositories/veterinarian_repository.dart';
+import '../widgets/custom_text_form_field.dart';
 
 class VeterinarianFormScreen extends StatefulWidget {
   const VeterinarianFormScreen({super.key});
@@ -12,39 +13,47 @@ class VeterinarianFormScreen extends StatefulWidget {
 
 class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
   final formVet = GlobalKey<FormState>();
-
   final nombreController = TextEditingController();
-  final especialidadController = TextEditingController();
+  //final especialidadController = TextEditingController();
   final telefonoController = TextEditingController();
   final emailController = TextEditingController();
   final clinicaController = TextEditingController();
 
-  VeterinarioModel? veterinario;
+  VeterinarioModel? veterinarioGlobal;
+
+  //aqui defino la lista de especialidades
+  List<Map<String, dynamic>> especialidades = [
+    {'especialidad': 'Medicina Interna'},
+    {'especialidad': 'Cirugía'},
+    {'especialidad': 'Oncología'},
+    {'especialidad': 'Cardiología'},
+    {'especialidad': 'Oftalmología'},
+  ];
+  String? especialidadSeleccionada;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)!.settings.arguments;
 
-    if (args != null) {
-      veterinario = args as VeterinarioModel;
-      nombreController.text = veterinario!.vetNombre;
-      especialidadController.text = veterinario!.vetEspecialidad ?? '';
-      telefonoController.text = veterinario!.vetTelefono ?? '';
-      emailController.text = veterinario!.vetEmail ?? '';
-      clinicaController.text = veterinario!.vetClinica ?? '';
+    if (args != null && veterinarioGlobal == null) {
+      veterinarioGlobal = args as VeterinarioModel;
+      nombreController.text = veterinarioGlobal!.vetNombre;
+      especialidadSeleccionada = veterinarioGlobal!.vetEspecialidad;
+      //especialidadController.text = veterinarioGlobal!.vetEspecialidad ?? '';
+      telefonoController.text = veterinarioGlobal!.vetTelefono;
+      emailController.text = veterinarioGlobal!.vetEmail;
+      clinicaController.text = veterinarioGlobal!.vetClinica;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final esEditar = veterinario != null;
+    final esEditar = veterinarioGlobal != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          esEditar ? 'Editar Veterinario' : 'Formulario de Veterinario',
-        ),
+        title: Text(esEditar ? 'Editar Veterinario' : 'Registrar Veterinario'),
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
       ),
@@ -52,147 +61,150 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
         padding: const EdgeInsets.all(20),
         child: Form(
           key: formVet,
-          child: Column(
+          child: ListView(
             children: [
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: nombreController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'El nombre es requerido';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Nombre',
-                  hintText: 'Ingrese el nombre del veterinario',
-                  prefixIcon: const Icon(Icons.person),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: especialidadController,
-                decoration: InputDecoration(
-                  labelText: 'Especialidad',
-                  hintText: 'Ej: Cirugía, Dermatología',
-                  prefixIcon: const Icon(Icons.medical_services_outlined),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: telefonoController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: 'Teléfono',
-                  hintText: 'Ingrese el teléfono',
-                  prefixIcon: const Icon(Icons.phone),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'correo@ejemplo.com',
-                  prefixIcon: const Icon(Icons.email),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              TextFormField(
-                controller: clinicaController,
-                decoration: InputDecoration(
-                  labelText: 'Clínica',
-                  hintText: 'Nombre de la clínica',
-                  prefixIcon: const Icon(Icons.local_hospital),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 20),
-
-              Row(
+              Column(
                 children: [
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: TextButton(
-                        onPressed: () async {
-                          if (formVet.currentState!.validate()) {
-                            final repo = VeterinarioRepository();
+                  SizedBox(height: 15),
 
-                            final vet = VeterinarioModel(
-                              vetNombre: nombreController.text,
-                              vetEspecialidad: especialidadController.text,
-                              vetTelefono: telefonoController.text,
-                              vetEmail: emailController.text,
-                              vetClinica: clinicaController.text,
-                            );
+                  CustomTextFormField(
+                    label: 'Nombre Completo',
+                    controller: nombreController,
+                    icon: Icons.person,
+                    keyboardType: TextInputType.text,
+                    hintText: 'Juan Gonzáles',
+                    requerido: true,
+                    minlongitud: 5,
+                    maxlongitud: 40,
+                    letras: true,
+                  ),
 
-                            if (esEditar) {
-                              vet.vetId = veterinario!.vetId;
-                              await repo.edit(vet);
-                            } else {
-                              await repo.create(vet);
-                            }
+                  SizedBox(height: 15),
 
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Text(
-                          'Aceptar',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                  DropdownButtonFormField<String>(
+                    value: especialidadSeleccionada,
+                    items: especialidades.map((d) {
+                      return DropdownMenuItem<String>(
+                        value: d['especialidad'],
+                        child: Text(d['especialidad']),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        especialidadSeleccionada = value;
+                      });
+                    },
+                    validator: (v) =>
+                        v == null ? 'Seleccione la especialidad' : null,
+                    decoration: InputDecoration(
+                      labelText: 'Especialidad',
+                      prefixIcon: Icon(Icons.medical_information),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                   ),
 
-                  SizedBox(width: 10),
+                  SizedBox(height: 15),
 
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          'Cancelar',
-                          style: TextStyle(color: Colors.white),
+                  CustomTextFormField(
+                    label: 'Teléfono',
+                    controller: telefonoController,
+                    icon: Icons.phone,
+                    keyboardType: TextInputType.number,
+                    longitud: 10,
+                    hintText: '0969587458',
+                    requerido: true,
+                  ),
+
+                  SizedBox(height: 15),
+
+                  CustomTextFormField(
+                    label: 'Email',
+                    controller: emailController,
+                    icon: Icons.email_rounded,
+                    keyboardType: TextInputType.emailAddress,
+                    hintText: 'correo@gmail.com',
+                    requerido: true,
+                    minlongitud: 5,
+                    maxlongitud: 40,
+                  ),
+
+                  SizedBox(height: 15),
+
+                  CustomTextFormField(
+                    label: 'Clínica',
+                    controller: clinicaController,
+                    hintText: 'SeguriVet',
+                    minlongitud: 5,
+                    maxlongitud: 40,
+                    icon: Icons.local_hospital,
+                    requerido: true,
+                  ),
+
+                  SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: TextButton(
+                            onPressed: () async {
+                              if (formVet.currentState!.validate()) {
+                                final repo = VeterinarioRepository();
+
+                                final vet = VeterinarioModel(
+                                  vetNombre: nombreController.text,
+                                  vetEspecialidad: especialidadSeleccionada!,
+                                  vetTelefono: telefonoController.text,
+                                  vetEmail: emailController.text,
+                                  vetClinica: clinicaController.text,
+                                );
+
+                                if (esEditar) {
+                                  vet.vetId = veterinarioGlobal!.vetId;
+                                  await repo.edit(vet);
+                                } else {
+                                  await repo.create(vet);
+                                }
+
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: const Text(
+                              'Aceptar',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+
+                      SizedBox(width: 10),
+
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              'Cancelar',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

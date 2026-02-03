@@ -58,14 +58,14 @@ class _PetScreenState extends State<PetScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Listado de Mascotas'),
+        title: Text('Listado de Mascotas'),
         backgroundColor: Colors.cyan,
         foregroundColor: Colors.white,
       ),
       body: cargando
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : mascotas.isEmpty
-          ? const Center(child: Text('No hay mascotas registradas'))
+          ? Center(child: Text('No hay mascotas registradas'))
           : ListView.builder(
               itemCount: mascotas.length,
               itemBuilder: (context, i) {
@@ -75,8 +75,8 @@ class _PetScreenState extends State<PetScreen> {
                   child: Card(
                     child: ListTile(
                       leading: const Icon(Icons.pets),
-                      title: Text(pet.mascNombre),
-                      subtitle: Text(pet.mascEspecie),
+                      title: Text(pet.nombre),
+                      subtitle: Text(pet.especie),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -93,7 +93,7 @@ class _PetScreenState extends State<PetScreen> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => eliminarMascota(pet.mascId!),
+                            onPressed: () => eliminarMascota(pet.id!),
                           ),
                         ],
                       ),
@@ -107,7 +107,7 @@ class _PetScreenState extends State<PetScreen> {
           await Navigator.pushNamed(context, '/pet/form');
           cargarMascotas();
         },
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.teal,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, color: Colors.white),
       ),

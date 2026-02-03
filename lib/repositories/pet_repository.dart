@@ -3,7 +3,7 @@ import '../settings/database_connection.dart';
 
 class MascotaRepository {
   final String tableName = 'mascota';
-  final DatabaseConnection database = DatabaseConnection();
+  final database = DatabaseConnection();
 
   // Insertar mascota
   Future<int> create(MascotaModel data) async {
@@ -17,19 +17,15 @@ class MascotaRepository {
     return await db.update(
       tableName,
       data.toMap(),
-      where: 'masc_id = ?',
-      whereArgs: [data.mascId],
+      where: 'id = ?',
+      whereArgs: [data.id],
     );
   }
 
   // Eliminar mascota
   Future<int> delete(int mascId) async {
     final db = await database.db;
-    return await db.delete(
-      tableName,
-      where: 'masc_id = ?',
-      whereArgs: [mascId],
-    );
+    return await db.delete(tableName, where: 'id = ?', whereArgs: [mascId]);
   }
 
   // Listar todas las mascotas
@@ -40,6 +36,7 @@ class MascotaRepository {
   }
 
   // Obtener mascota por ID
+  /*
   Future<MascotaModel?> getById(int mascId) async {
     final db = await database.db;
     final response = await db.query(
@@ -65,5 +62,27 @@ class MascotaRepository {
     );
 
     return response.map((e) => MascotaModel.fromMap(e)).toList();
+  }*/
+
+  Future<bool> nombreUnico(String nombre, int dueId) async {
+    final db = await database.db;
+    final result = await db.query(
+      'mascota',
+      where: 'nombre = ? AND due_id  = ?',
+      whereArgs: [nombre, dueId],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> nombreUnicoEditar(String nombre, int dueId, int mascId) async {
+    final db = await database.db;
+    final result = await db.query(
+      'mascota',
+      where:
+          'nombre = ? AND due_id = ? AND id != ?',  
+      whereArgs: [nombre, dueId, mascId],
+    );
+
+    return result.isEmpty; 
   }
 }

@@ -1,19 +1,19 @@
 class VeterinarioModel {
   int? vetId;
   String vetNombre;
-  String? vetEspecialidad;
-  String? vetTelefono;
-  String? vetEmail;
-  String? vetClinica;
+  String vetEspecialidad;
+  String vetTelefono;
+  String vetEmail;
+  String vetClinica;
 
   // Constructor
   VeterinarioModel({
     this.vetId,
     required this.vetNombre,
-    this.vetEspecialidad,
-    this.vetTelefono,
-    this.vetEmail,
-    this.vetClinica,
+    required this.vetEspecialidad,
+    required this.vetTelefono,
+    required this.vetEmail,
+    required this.vetClinica,
   });
 
   // Convertir de Map a Clase (SELECT)

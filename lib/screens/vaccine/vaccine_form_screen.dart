@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_final/screens/widgets/custom_text_form_field.dart';
 
 import '../../models/vaccine_model.dart';
 import '../../models/pet_model.dart';
@@ -17,9 +18,8 @@ class VaccineFormScreen extends StatefulWidget {
 
 class _VaccineFormScreenState extends State<VaccineFormScreen> {
   final formVacuna = GlobalKey<FormState>();
-
   final nombreController = TextEditingController();
-  final fechaController = TextEditingController();
+  // final fechaController = TextEditingController();
   final dosisController = TextEditingController();
   final observacionesController = TextEditingController();
 
@@ -40,10 +40,8 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
   Future<void> cargarCombos() async {
     final petRepo = MascotaRepository();
     final vetRepo = VeterinarioRepository();
-
     mascotas = await petRepo.getAll();
     veterinarios = await vetRepo.getAll();
-
     setState(() {});
   }
 
@@ -55,8 +53,7 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
     if (args != null) {
       vacuna = args as VacunaModel;
       nombreController.text = vacuna!.vacNombre;
-      fechaController.text = vacuna!.vacFechaAplicacion;
-      dosisController.text = vacuna!.vacDosis ?? '';
+      dosisController.text = vacuna!.vacDosis.toString();
       observacionesController.text = vacuna!.vacObservaciones ?? '';
       mascotaSeleccionada = vacuna!.mascId;
       veterinarioSeleccionado = vacuna!.vetId;
@@ -69,7 +66,7 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(esEditar ? 'Editar Vacuna' : 'Formulario de Vacuna'),
+        title: Text(esEditar ? 'Editar Vacuna' : 'Registrar Vacuna'),
         backgroundColor: Colors.cyan,
         foregroundColor: Colors.white,
       ),
@@ -80,64 +77,37 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
           child: ListView(
             children: [
               SizedBox(height: 15),
-
-              TextFormField(
+              CustomTextFormField(
+                label: 'Vacuna',
                 controller: nombreController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'El nombre es requerido';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Vacuna',
-                  prefixIcon: const Icon(Icons.vaccines),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
+                hintText: 'Moquillo',
+                requerido: true,
+                icon: Icons.vaccines,
+                minlongitud: 5,
+                maxlongitud: 20,
               ),
 
               SizedBox(height: 15),
 
-              TextFormField(
-                controller: fechaController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'La fecha es requerida';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Fecha aplicación',
-                  hintText: 'YYYY-MM-DD',
-                  prefixIcon: const Icon(Icons.date_range),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              DropdownButtonFormField<int>(
+              DropdownButtonFormField(
                 value: mascotaSeleccionada,
                 items: mascotas.map((m) {
-                  return DropdownMenuItem(
-                    value: m.mascId,
-                    child: Text(m.mascNombre),
-                  );
+                  return DropdownMenuItem(value: m.id, child: Text(m.nombre));
                 }).toList(),
                 onChanged: (value) {
                   setState(() {
                     mascotaSeleccionada = value;
                   });
                 },
-                validator: (value) =>
-                    value == null ? 'Seleccione una mascota' : null,
+                validator: (v) {
+                  if (v == null) {
+                    return 'Seleccione una mascota';
+                  }
+                  return null;
+                },
                 decoration: InputDecoration(
                   labelText: 'Mascota',
-                  prefixIcon: const Icon(Icons.pets),
+                  prefixIcon: Icon(Icons.pets),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -146,7 +116,7 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
 
               SizedBox(height: 15),
 
-              DropdownButtonFormField<int>(
+              DropdownButtonFormField(
                 value: veterinarioSeleccionado,
                 items: veterinarios.map((v) {
                   return DropdownMenuItem(
@@ -163,7 +133,7 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
                     value == null ? 'Seleccione un veterinario' : null,
                 decoration: InputDecoration(
                   labelText: 'Veterinario',
-                  prefixIcon: const Icon(Icons.medical_services),
+                  prefixIcon: Icon(Icons.medical_services),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -172,31 +142,28 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
 
               SizedBox(height: 15),
 
-              TextFormField(
+              CustomTextFormField(
+                label: 'Dosis',
                 controller: dosisController,
-                decoration: InputDecoration(
-                  labelText: 'Dosis',
-                  prefixIcon: const Icon(Icons.medication),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
+                hintText: '1 ml',
+                suffixText: 'ml',
+                requerido: true,
+                keyboardType: TextInputType.number,
+                numerico: true,
+                icon: Icons.medication,
+                maxlongitud: 2,
               ),
-
               SizedBox(height: 15),
 
-              TextFormField(
+              CustomTextFormField(
+                label: 'Observaciones',
                 controller: observacionesController,
+                hintText: 'Ninguna',
                 maxLines: 3,
-                decoration: InputDecoration(
-                  labelText: 'Observaciones',
-                  prefixIcon: const Icon(Icons.notes),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
+                icon: Icons.notes,
 
+                maxlongitud: 40,
+              ),
               SizedBox(height: 20),
 
               Row(
@@ -212,11 +179,10 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
                         onPressed: () async {
                           if (formVacuna.currentState!.validate()) {
                             final repo = VacunaRepository();
-
                             final data = VacunaModel(
                               vacNombre: nombreController.text,
-                              vacFechaAplicacion: fechaController.text,
-                              vacDosis: dosisController.text,
+                              //vacFechaAplicacion: fechaController.text,
+                              vacDosis: int.parse(dosisController.text),
                               vacObservaciones: observacionesController.text,
                               mascId: mascotaSeleccionada!,
                               vetId: veterinarioSeleccionado!,

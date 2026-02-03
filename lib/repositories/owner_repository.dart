@@ -35,19 +35,63 @@ class OwnerRepository {
     return response.map((e) => OwnerModel.fromMap(e)).toList();
   }
 
-  // Obtener dueño por ID
-  Future<OwnerModel?> getById(int dueId) async {
+  Future<bool> cedulaUnica(String cedula) async {
     final db = await database.db;
-    final response = await db.query(
-      tableName,
-      where: 'due_id = ?',
-      whereArgs: [dueId],
-      limit: 1,
+    final result = await db.query(
+      'dueno',
+      where: 'due_cedula = ?',
+      whereArgs: [cedula],
     );
+    return result.isEmpty;
+  }
 
-    if (response.isNotEmpty) {
-      return OwnerModel.fromMap(response.first);
-    }
-    return null;
+  Future<bool> cedulaUnicaEditar(String cedula, int dueId) async {
+    final db = await database.db;
+    final result = await db.query(
+      'dueno',
+      where: 'due_cedula = ? AND due_id != ?',
+      whereArgs: [cedula, dueId],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> celularUnico(String celular, int dueId) async {
+    final db = await database.db;
+    final result = await db.query(
+      'dueno',
+      where: 'due_celular = ?',
+      whereArgs: [celular],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> celularUnicoEditar(String celular, int dueId) async {
+    final db = await database.db;
+    final result = await db.query(
+      'dueno',
+      where: 'due_celular = ? AND due_id != ?',
+      whereArgs: [celular, dueId],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> correoUnico(String correo, int dueId) async {
+    final db = await database.db;
+    final result = await db.query(
+      'dueno',
+      where: 'due_correo = ?',
+      whereArgs: [correo],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> correoUnicoEditar(String correo, int dueId) async {
+    final db = await database.db;
+    final result = await db.query(
+      'dueno',
+      where: 'due_correo = ? AND due_id != ?',
+      whereArgs: [correo, dueId],
+    );
+    return result.isEmpty;
   }
 }

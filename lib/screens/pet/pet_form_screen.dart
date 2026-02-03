@@ -4,6 +4,7 @@ import '../../models/pet_model.dart';
 import '../../models/owner_model.dart';
 import '../../repositories/pet_repository.dart';
 import '../../repositories/owner_repository.dart';
+import '../widgets/custom_text_form_field.dart';
 
 class PetFormScreen extends StatefulWidget {
   const PetFormScreen({super.key});
@@ -14,22 +15,45 @@ class PetFormScreen extends StatefulWidget {
 
 class _PetFormScreenState extends State<PetFormScreen> {
   final formMascota = GlobalKey<FormState>();
-
   final nombreController = TextEditingController();
-  final especieController = TextEditingController();
-  final sexoController = TextEditingController();
-  final nacimientoController = TextEditingController();
-  final colorController = TextEditingController();
+  //final especieController = TextEditingController();
+  //final sexoController = TextEditingController();
+  //final nacimientoController = TextEditingController();
+  //final colorController = TextEditingController();
   final pesoController = TextEditingController();
 
-  final MascotaRepository mascotaRepo = MascotaRepository();
-  final OwnerRepository duenoRepo = OwnerRepository();
+  //final MascotaRepository mascotaRepo = MascotaRepository();
+  //final OwnerRepository duenoRepo = OwnerRepository();
 
-  MascotaModel? mascota;
-
+  MascotaModel? mascotaGlobal;
   List<OwnerModel> duenos = [];
   int? duenoSeleccionado;
-  bool cargandoDuenos = true;
+
+  //aqui defino la lista de especies
+  List<Map<String, dynamic>> especies = [
+    {'especie': 'Canino'},
+    {'especie': 'Felino'},
+  ];
+  String? especieSeleccionada;
+
+  //aqui defino la lista de sexo
+  List<Map<String, dynamic>> sexos = [
+    {'sexo': 'Macho'},
+    {'sexo': 'Hembra'},
+  ];
+  String? sexoSeleccionado;
+
+  //aqui defino la lista de colores
+  List<Map<String, dynamic>> colores = [
+    {'color': 'Blanco'},
+    {'color': 'Negro'},
+    {'color': 'Café'},
+    {'color': 'Blaco/Negro'},
+    {'color': 'Blanco/Café'},
+    {'color': 'Gris'},
+    {'color': 'Naranja'},
+  ];
+  String? colorSeleccionado;
 
   @override
   void initState() {
@@ -38,203 +62,310 @@ class _PetFormScreenState extends State<PetFormScreen> {
   }
 
   Future<void> cargarDuenos() async {
+    var duenoRepo = OwnerRepository();
     duenos = await duenoRepo.getAll();
-    setState(() => cargandoDuenos = false);
+    setState(() {});
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     final args = ModalRoute.of(context)!.settings.arguments;
-    if (args != null) {
-      mascota = args as MascotaModel;
-      nombreController.text = mascota!.mascNombre;
-      especieController.text = mascota!.mascEspecie;
-      sexoController.text = mascota!.mascSexo;
-      nacimientoController.text = mascota!.mascFechaNacimiento;
-      colorController.text = mascota!.mascColor;
-      pesoController.text = mascota!.mascPeso.toString();
-      duenoSeleccionado = mascota!.dueId;
+    if (args != null && mascotaGlobal == null) {
+      mascotaGlobal = args as MascotaModel;
+      nombreController.text = mascotaGlobal!.nombre;
+      especieSeleccionada = mascotaGlobal!.especie;
+      sexoSeleccionado = mascotaGlobal!.sexo;
+      // nacimientoController.text = mascotaGlobal!.fechaNacimiento;
+      colorSeleccionado = mascotaGlobal!.color;
+      pesoController.text = mascotaGlobal!.peso.toString();
+      duenoSeleccionado = mascotaGlobal!.dueId;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final esEditar = mascota != null;
+    final esEditar = mascotaGlobal != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(esEditar ? 'Editar Mascota' : 'Nueva Mascota'),
+        title: Text(esEditar ? 'Editar Mascota' : 'Registrar Mascota'),
+        backgroundColor: Colors.cyan,
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Form(
           key: formMascota,
           child: ListView(
+            padding: const EdgeInsets.all(16),
             children: [
-              TextFormField(
-                controller: nombreController,
-                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
-                decoration: InputDecoration(
-                  labelText: 'Nombre',
-                  prefixIcon: const Icon(Icons.pets),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
+              Column(
+                children: [
+                  SizedBox(height: 10),
 
-              TextFormField(
-                controller: especieController,
-                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
-                decoration: InputDecoration(
-                  labelText: 'Especie',
-                  prefixIcon: const Icon(Icons.pets),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
+                  CustomTextFormField(
+                    label: 'Nombre',
+                    controller: nombreController,
+                    hintText: 'Peluchin',
+                    icon: Icons.pets,
+                    requerido: true,
+                    letras: true,
+                    minlongitud: 4,
+                    maxlongitud: 20,
                   ),
-                ),
-              ),
-              SizedBox(height: 10),
 
-              TextFormField(
-                controller: sexoController,
-                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
-                decoration: InputDecoration(
-                  labelText: 'Sexo',
-                  prefixIcon: const Icon(Icons.pets),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
+                  SizedBox(height: 30),
+
+                  DropdownButtonFormField<String>(
+                    value: especieSeleccionada,
+                    items: especies.map((d) {
+                      return DropdownMenuItem<String>(
+                        value: d['especie'],
+                        child: Text(d['especie']),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        especieSeleccionada = value;
+                      });
+                    },
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return 'Seleccione una especie';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Especie',
+                      prefixIcon: const Icon(Icons.pets),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(height: 10),
+                  SizedBox(height: 30),
 
-              TextFormField(
-                controller: nacimientoController,
-                readOnly: true,
-                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
-                decoration: InputDecoration(
-                  labelText: 'Fecha de nacimiento',
-                  suffixIcon: const Icon(Icons.calendar_today),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
+                  DropdownButtonFormField<String>(
+                    value: sexoSeleccionado,
+                    items: sexos.map((d) {
+                      return DropdownMenuItem<String>(
+                        value: d['sexo'],
+                        child: Text(d['sexo']),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        sexoSeleccionado = value;
+                      });
+                    },
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return 'Seleccione el sexo';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Sexo',
+                      prefixIcon: Icon(Icons.pets),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
                   ),
-                ),
-                onTap: () async {
-                  final fecha = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(1990),
-                    lastDate: DateTime.now(),
-                  );
-                  if (fecha != null) {
-                    nacimientoController.text =
-                        '${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-${fecha.day.toString().padLeft(2, '0')}';
-                  }
-                },
-              ),
-              SizedBox(height: 10),
 
-              TextFormField(
-                controller: colorController,
-                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
-                decoration: InputDecoration(
-                  labelText: 'Color',
-                  prefixIcon: const Icon(Icons.palette),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
+                  SizedBox(height: 30),
+                  DropdownButtonFormField<String>(
+                    value: colorSeleccionado,
+                    items: colores.map((d) {
+                      return DropdownMenuItem<String>(
+                        value: d['color'],
+                        child: Text(d['color']),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        colorSeleccionado = value;
+                      });
+                    },
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return 'Seleccione el color';
+                      }
+
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Color',
+                      prefixIcon: Icon(Icons.invert_colors_sharp),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(height: 10),
 
-              TextFormField(
-                controller: pesoController,
-                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Peso',
-                  prefixIcon: const Icon(Icons.monitor_weight),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
+                  SizedBox(height: 30),
+
+                  CustomTextFormField(
+                    label: 'Peso',
+                    controller: pesoController,
+                    hintText: '4kg',
+                    icon: Icons.monitor_weight,
+                    decimal: true,
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    suffixText: 'kg',
+                    maxDecimales: 2,
                   ),
-                ),
-              ),
-              SizedBox(height: 10),
 
-              cargandoDuenos
-                  ? const Center(child: CircularProgressIndicator())
-                  : DropdownButtonFormField<int>(
-                      value: duenoSeleccionado,
-                      items: duenos
-                          .map(
-                            (d) => DropdownMenuItem<int>(
-                              value: d.dueId,
-                              child: Text(d.dueNombre),
+                  SizedBox(height: 30),
+
+                  DropdownButtonFormField<int>(
+                    value: duenoSeleccionado,
+                    items: duenos
+                        .map(
+                          (d) => DropdownMenuItem<int>(
+                            value: d.dueId,
+                            child: Text(d.dueNombre),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        duenoSeleccionado = value;
+                      });
+                    },
+                    validator: (v) {
+                      if (v == null) {
+                        return 'Seleccione un dueño';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Dueño',
+                      prefixIcon: const Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: TextButton(
+                            onPressed: () async {
+                              if (formMascota.currentState!.validate()) {
+                                final repo = MascotaRepository();
+                                final data = MascotaModel(
+                                  nombre: nombreController.text,
+                                  especie: especieSeleccionada!,
+                                  sexo: sexoSeleccionado!,
+                                  //fechaNacimiento: nacimientoController.text,
+                                  color: colorSeleccionado!,
+                                  peso: double.parse(pesoController.text),
+                                  dueId: duenoSeleccionado!,
+                                );
+
+                                if (esEditar) {
+                                  final nombre = nombreController.text;
+                                  final idDuenoSeleccionado = duenoSeleccionado;
+                                  final esUnico = await repo.nombreUnicoEditar(
+                                    nombre,
+                                    idDuenoSeleccionado!,
+                                    mascotaGlobal!.id!,
+                                  );
+                                  /*
+                                  if (!esUnico) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text('Error'),
+                                        content: Text(
+                                          'Ya existe una mascota con ese nombre para este dueño',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Aceptar'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    return;
+                                  }*/
+                                  data.dueId = duenoSeleccionado!;
+                                  data.id = mascotaGlobal!.id;
+                                  await repo.edit(data);
+                                } else {
+                                  final nombre = nombreController.text;
+                                  final idDuenoSeleccionado = duenoSeleccionado;
+                                  final nombreUnico = await repo.nombreUnico(
+                                    nombre,
+                                    idDuenoSeleccionado!,
+                                  );
+                                  if (!nombreUnico) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text('Error'),
+                                        content: Text(
+                                          'Ya existe el nombre de esa mascota para ese dueño',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Aceptar'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  await repo.create(data);
+                                }
+
+                                Navigator.pop(context);
+                              }
+                            },
+
+                            child: Text(esEditar ? 'Actualizar' : 'Guardar'),
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
                             ),
-                          )
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() => duenoSeleccionado = value);
-                      },
-                      validator: (v) =>
-                          v == null ? 'Seleccione un dueño' : null,
-                      decoration: InputDecoration(
-                        labelText: 'Dueño',
-                        prefixIcon: const Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          ),
                         ),
                       ),
-                    ),
-              const SizedBox(height: 20),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () async {
-                        if (formMascota.currentState!.validate()) {
-                          final data = MascotaModel(
-                            mascNombre: nombreController.text,
-                            mascEspecie: especieController.text,
-                            mascSexo: sexoController.text,
-                            mascFechaNacimiento: nacimientoController.text,
-                            mascColor: colorController.text,
-                            mascPeso: double.parse(pesoController.text),
-                            dueId: duenoSeleccionado!,
-                          );
-
-                          if (esEditar) {
-                            data.mascId = mascota!.mascId;
-                            await mascotaRepo.edit(data);
-                          } else {
-                            await mascotaRepo.create(data);
-                          }
-
-                          Navigator.pop(context);
-                        }
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('Cancelar'),
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
-                      child: const Text('Guardar'),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text('Cancelar'),
-                    ),
+                    ],
                   ),
                 ],
               ),

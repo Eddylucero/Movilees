@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'widgets/custom_container.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -7,97 +9,102 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sistema Veterinario'),
+        title: Row(
+          children: [
+            Icon(Icons.pets_rounded),
+            SizedBox(width: 10),
+            Text('Veterinaria'),
+          ],
+        ),
         backgroundColor: Colors.cyan,
         foregroundColor: Colors.white,
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  height: 50,
-                  width: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.deepPurple,
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/owner');
-                    },
-                    child: const Text(
-                      'Dueños',
-                      style: TextStyle(color: Colors.white),
+                Column(
+                  children: [
+                    Image.asset(
+                      'assets/icon/icono.png',
+                      height: 180,
+                      width: 350,
                     ),
-                  ),
-                ),
-                SizedBox(width: 15),
-
-                Container(
-                  height: 50,
-                  width: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.green,
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/pet');
-                    },
-                    child: const Text(
-                      'Mascotas',
-                      style: TextStyle(color: Colors.white),
+                    Text(
+                      'Patitas Felices',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
-
-            SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 50,
-                  width: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.orange,
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/vaccine');
-                    },
-                    child: const Text(
-                      'Vacunas',
-                      style: TextStyle(color: Colors.white),
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/owner');
+                      },
+                      child: CustomContainer(
+                        texto: 'Dueños',
+                        icon: Icons.people_alt_rounded,
+                        color: Colors.blueGrey,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width: 15),
-                Container(
-                  height: 50,
-                  width: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.blue,
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/veterinarian');
-                    },
-                    child: const Text(
-                      'Veterinarios',
-                      style: TextStyle(color: Colors.white),
+
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/pet');
+                      },
+                      child: CustomContainer(
+                        texto: 'Mascotas',
+                        icon: Icons.pets_rounded,
+                        color: Colors.indigoAccent,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/vaccine');
+                      },
+                      child: CustomContainer(
+                        texto: 'Vacunas',
+                        icon: Icons.vaccines,
+                        color: Colors.teal,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/veterinarian');
+                      },
+                      child: CustomContainer(
+                        texto: 'Veterinarios',
+                        icon: Icons.people_alt_rounded,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

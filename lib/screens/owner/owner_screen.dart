@@ -28,12 +28,12 @@ class _OwnerScreenState extends State<OwnerScreen> {
     setState(() => cargando = false);
   }
 
-  void eliminarOwner(int dueId) {
+  Future<void> eliminarOwner(int dueId) async {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Eliminar Dueño'),
-        content: const Text('¿Está seguro de eliminar este dueño?'),
+        title: Text('Eliminar Dueño'),
+        content: Text('¿Está seguro de eliminar este dueño?'),
         actions: [
           TextButton(
             onPressed: () async {
@@ -41,13 +41,13 @@ class _OwnerScreenState extends State<OwnerScreen> {
               Navigator.pop(context);
               cargarOwners();
             },
-            child: const Text('Sí'),
+            child: Text('Sí'),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('No'),
+            child: Text('No'),
           ),
         ],
       ),
@@ -58,14 +58,14 @@ class _OwnerScreenState extends State<OwnerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Listado de Dueños'),
+        title: Text('Listado de Dueños'),
         backgroundColor: Colors.cyan,
         foregroundColor: Colors.white,
       ),
       body: cargando
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : owners.isEmpty
-          ? const Center(child: Text('No hay dueños registrados'))
+          ? Center(child: Text('No hay dueños registrados.'))
           : ListView.builder(
               itemCount: owners.length,
               itemBuilder: (context, i) {
@@ -74,14 +74,15 @@ class _OwnerScreenState extends State<OwnerScreen> {
                   padding: const EdgeInsets.all(10),
                   child: Card(
                     child: ListTile(
-                      leading: const Icon(Icons.person),
+                      leading: Icon(Icons.person),
                       title: Text(owner.dueNombre),
                       subtitle: Text(owner.dueCedula),
                       trailing: Row(
+                        //para agregar objetos dentro del card
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.orange),
+                            icon: Icon(Icons.edit, color: Colors.orange),
                             onPressed: () async {
                               await Navigator.pushNamed(
                                 context,
@@ -92,7 +93,7 @@ class _OwnerScreenState extends State<OwnerScreen> {
                             },
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
+                            icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () => eliminarOwner(owner.dueId!),
                           ),
                         ],
@@ -107,7 +108,7 @@ class _OwnerScreenState extends State<OwnerScreen> {
           await Navigator.pushNamed(context, '/owner/form');
           cargarOwners();
         },
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.teal,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, color: Colors.white),
       ),
