@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:proyecto_final/repositories/vaccine_repository.dart';
 
 import '../../models/veterinarian_model.dart';
-import '../../repositories/pet_repository.dart';
+
+import '../../repositories/vaccine_repository.dart';
 import '../../repositories/veterinarian_repository.dart';
 
 class VeterinarianScreen extends StatefulWidget {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:proyecto_final/screens/widgets/custom_text_form_field.dart';
 
 import '../../models/vaccine_model.dart';
 import '../../models/pet_model.dart';
@@ -8,6 +7,7 @@ import '../../models/veterinarian_model.dart';
 import '../../repositories/vaccine_repository.dart';
 import '../../repositories/pet_repository.dart';
 import '../../repositories/veterinarian_repository.dart';
+import '../widgets/custom_text_form_field.dart';
 
 class VaccineFormScreen extends StatefulWidget {
   const VaccineFormScreen({super.key});
