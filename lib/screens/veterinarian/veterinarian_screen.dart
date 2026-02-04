@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_final/repositories/vaccine_repository.dart';
 
 import '../../models/veterinarian_model.dart';
+import '../../repositories/pet_repository.dart';
 import '../../repositories/veterinarian_repository.dart';
 
 class VeterinarianScreen extends StatefulWidget {
@@ -12,6 +14,7 @@ class VeterinarianScreen extends StatefulWidget {
 
 class _VeterinarianScreenState extends State<VeterinarianScreen> {
   final VeterinarioRepository repo = VeterinarioRepository();
+  final VacunaRepository repoVac = VacunaRepository();
 
   List<VeterinarioModel> veterinarios = [];
   bool cargando = true;
@@ -93,7 +96,18 @@ class _VeterinarianScreenState extends State<VeterinarianScreen> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => eliminarVeterinario(vet.vetId!),
+                            onPressed: () async {
+                              final totalVacunas = await repoVac
+                                  .obtenerTotalVacunasVeterinario(vet.vetId!);
+                              if (totalVacunas > 0) {
+                                mostrarError(
+                                  context,
+                                  "El veterinario tiene vacunas asociadas. Primero elimine las vacunas.",
+                                );
+                                return;
+                              }
+                              eliminarVeterinario(vet.vetId!);
+                            },
                           ),
                         ],
                       ),
@@ -110,6 +124,22 @@ class _VeterinarianScreenState extends State<VeterinarianScreen> {
         backgroundColor: Colors.teal,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  void mostrarError(BuildContext context, String mensaje) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(children: [Text('Información')]),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Aceptar'),
+          ),
+        ],
       ),
     );
   }

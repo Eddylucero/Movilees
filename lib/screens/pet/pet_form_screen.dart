@@ -16,15 +16,7 @@ class PetFormScreen extends StatefulWidget {
 class _PetFormScreenState extends State<PetFormScreen> {
   final formMascota = GlobalKey<FormState>();
   final nombreController = TextEditingController();
-  //final especieController = TextEditingController();
-  //final sexoController = TextEditingController();
-  //final nacimientoController = TextEditingController();
-  //final colorController = TextEditingController();
   final pesoController = TextEditingController();
-
-  //final MascotaRepository mascotaRepo = MascotaRepository();
-  //final OwnerRepository duenoRepo = OwnerRepository();
-
   MascotaModel? mascotaGlobal;
   List<OwnerModel> duenos = [];
   int? duenoSeleccionado;
@@ -76,7 +68,6 @@ class _PetFormScreenState extends State<PetFormScreen> {
       nombreController.text = mascotaGlobal!.nombre;
       especieSeleccionada = mascotaGlobal!.especie;
       sexoSeleccionado = mascotaGlobal!.sexo;
-      // nacimientoController.text = mascotaGlobal!.fechaNacimiento;
       colorSeleccionado = mascotaGlobal!.color;
       pesoController.text = mascotaGlobal!.peso.toString();
       duenoSeleccionado = mascotaGlobal!.dueId;
@@ -269,72 +260,45 @@ class _PetFormScreenState extends State<PetFormScreen> {
                                   nombre: nombreController.text,
                                   especie: especieSeleccionada!,
                                   sexo: sexoSeleccionado!,
-                                  //fechaNacimiento: nacimientoController.text,
+
                                   color: colorSeleccionado!,
                                   peso: double.parse(pesoController.text),
                                   dueId: duenoSeleccionado!,
                                 );
 
                                 if (esEditar) {
-                                  final nombre = nombreController.text;
-                                  final idDuenoSeleccionado = duenoSeleccionado;
-                                  final esUnico = await repo.nombreUnicoEditar(
-                                    nombre,
-                                    idDuenoSeleccionado!,
-                                    mascotaGlobal!.id!,
-                                  );
-                                  /*
-                                  if (!esUnico) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Text('Error'),
-                                        content: Text(
-                                          'Ya existe una mascota con ese nombre para este dueño',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text('Aceptar'),
-                                          ),
-                                        ],
-                                      ),
+                                  final nombreUnico = await repo
+                                      .nombreUnicoEditar(
+                                        nombreController.text,
+                                        duenoSeleccionado!,
+                                        mascotaGlobal!.id!,
+                                      );
+
+                                  if (!nombreUnico) {
+                                    mostrarError(
+                                      context,
+                                      "Ya existe el nombre de la mascota con ese dueño",
                                     );
+
                                     return;
-                                  }*/
+                                  }
                                   data.dueId = duenoSeleccionado!;
                                   data.id = mascotaGlobal!.id;
                                   await repo.edit(data);
                                 } else {
-                                  final nombre = nombreController.text;
-                                  final idDuenoSeleccionado = duenoSeleccionado;
                                   final nombreUnico = await repo.nombreUnico(
-                                    nombre,
-                                    idDuenoSeleccionado!,
+                                    nombreController.text,
+                                    duenoSeleccionado!,
                                   );
                                   if (!nombreUnico) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Text('Error'),
-                                        content: Text(
-                                          'Ya existe el nombre de esa mascota para ese dueño',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text('Aceptar'),
-                                          ),
-                                        ],
-                                      ),
+                                    mostrarError(
+                                      context,
+                                      "El dueño ya tiene registrada una mascota con ese nombre.",
                                     );
                                     return;
                                   }
                                   await repo.create(data);
                                 }
-
                                 Navigator.pop(context);
                               }
                             },
@@ -372,6 +336,22 @@ class _PetFormScreenState extends State<PetFormScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void mostrarError(BuildContext context, String mensaje) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(children: [Text('Información')]),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Aceptar'),
+          ),
+        ],
       ),
     );
   }

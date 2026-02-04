@@ -60,6 +60,7 @@ class DatabaseConnection {
           CREATE TABLE veterinario (
             vet_id INTEGER PRIMARY KEY AUTOINCREMENT,
             vet_nombre TEXT NOT NULL,
+            vet_cedula TEXT NOT NULL UNIQUE,
             vet_especialidad TEXT NOT NULL,
             vet_telefono TEXT NOT NULL,
             vet_email TEXT NOT NULL,

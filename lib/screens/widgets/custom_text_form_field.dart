@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -18,6 +19,7 @@ class CustomTextFormField extends StatelessWidget {
   final int? maxDecimales;
   final int? maxEnteros;
   final bool letras;
+  final bool email;
 
   const CustomTextFormField({
     super.key,
@@ -36,8 +38,8 @@ class CustomTextFormField extends StatelessWidget {
     this.decimal = false,
     this.maxEnteros = 2,
     this.maxDecimales,
-
     this.letras = false,
+    this.email = false,
   });
   @override
   Widget build(BuildContext context) {
@@ -57,6 +59,7 @@ class CustomTextFormField extends StatelessWidget {
         if (requerido && (v == null || v.trim().isEmpty || v.isEmpty)) {
           return 'El campo $label es requerido';
         }
+
         if (minlongitud != null && (v == null || v.length < minlongitud!)) {
           return 'Mínimo $minlongitud caracteres.';
         }
@@ -85,6 +88,11 @@ class CustomTextFormField extends StatelessWidget {
         }
         if (longitud != null && v!.length != longitud) {
           return '$label debe tener $longitud dígitos';
+        }
+        if (email && v != null && v.isNotEmpty) {
+          if (!EmailValidator.validate(v)) {
+            return 'Ingrese un correo electrónico válido';
+          }
         }
 
         return null;

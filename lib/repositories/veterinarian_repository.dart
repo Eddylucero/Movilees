@@ -50,4 +50,66 @@ class VeterinarioRepository {
     }
     return null;
   }
+
+  Future<bool> cedulaUnica(String cedula) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      where: 'vet_cedula = ?',
+      whereArgs: [cedula],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> celularUnico(String telefono) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      where: 'vet_telefono = ?',
+      whereArgs: [telefono],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> correoUnico(String email) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      where: 'vet_email = ?',
+      whereArgs: [email],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> cedulaUnicaEditar(String cedula, int vetId) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      where: 'vet_cedula = ? AND vet_id != ?',
+      whereArgs: [cedula, vetId],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> celularUnicoEditar(String telefono, int vetId) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      where: 'vet_telefono = ? AND vet_id != ?',
+      whereArgs: [telefono, vetId],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> correoUnicoEditar(String email, int vetId) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      where: 'vet_email = ? AND vet_id != ?',
+      whereArgs: [email, vetId],
+    );
+    return result.isEmpty;
+  }
+
+  
 }

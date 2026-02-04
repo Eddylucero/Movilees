@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_final/repositories/vaccine_repository.dart';
 
 import '../../models/pet_model.dart';
+import '../../repositories/owner_repository.dart';
 import '../../repositories/pet_repository.dart';
 
 class PetScreen extends StatefulWidget {
@@ -12,6 +14,8 @@ class PetScreen extends StatefulWidget {
 
 class _PetScreenState extends State<PetScreen> {
   final MascotaRepository repo = MascotaRepository();
+  final OwnerRepository repoDueno = OwnerRepository();
+  final VacunaRepository repoVac = VacunaRepository();
 
   List<MascotaModel> mascotas = [];
   bool cargando = true;
@@ -92,8 +96,19 @@ class _PetScreenState extends State<PetScreen> {
                             },
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => eliminarMascota(pet.id!),
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () async {
+                              final totaVacunas = await repoVac
+                                  .obtenerTotalVacunasMascota(pet.id!);
+                              if (totaVacunas > 0) {
+                                mostrarError(
+                                  context,
+                                  "La mascota tiene vacunas realizadas.Primero elimine las vacunas.",
+                                );
+                                return;
+                              }
+                              eliminarMascota(pet.id!);
+                            },
                           ),
                         ],
                       ),
@@ -110,6 +125,22 @@ class _PetScreenState extends State<PetScreen> {
         backgroundColor: Colors.teal,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  void mostrarError(BuildContext context, String mensaje) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(children: [Text('Información')]),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Aceptar'),
+          ),
+        ],
       ),
     );
   }

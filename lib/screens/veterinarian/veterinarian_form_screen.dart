@@ -14,7 +14,7 @@ class VeterinarianFormScreen extends StatefulWidget {
 class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
   final formVet = GlobalKey<FormState>();
   final nombreController = TextEditingController();
-  //final especialidadController = TextEditingController();
+  final cedulaController = TextEditingController();
   final telefonoController = TextEditingController();
   final emailController = TextEditingController();
   final clinicaController = TextEditingController();
@@ -39,8 +39,8 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
     if (args != null && veterinarioGlobal == null) {
       veterinarioGlobal = args as VeterinarioModel;
       nombreController.text = veterinarioGlobal!.vetNombre;
+      cedulaController.text = veterinarioGlobal!.vetCedula;
       especialidadSeleccionada = veterinarioGlobal!.vetEspecialidad;
-      //especialidadController.text = veterinarioGlobal!.vetEspecialidad ?? '';
       telefonoController.text = veterinarioGlobal!.vetTelefono;
       emailController.text = veterinarioGlobal!.vetEmail;
       clinicaController.text = veterinarioGlobal!.vetClinica;
@@ -80,6 +80,16 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                   ),
 
                   SizedBox(height: 15),
+                  CustomTextFormField(
+                    label: 'Cédula',
+                    controller: cedulaController,
+                    icon: Icons.card_membership_outlined,
+                    keyboardType: TextInputType.number,
+                    longitud: 10,
+                    hintText: '0999999999',
+                    requerido: true,
+                  ),
+                  SizedBox(height: 15),
 
                   DropdownButtonFormField<String>(
                     value: especialidadSeleccionada,
@@ -94,8 +104,12 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                         especialidadSeleccionada = value;
                       });
                     },
-                    validator: (v) =>
-                        v == null ? 'Seleccione la especialidad' : null,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return 'Seleccione la especialidad';
+                      }
+                      return null;
+                    },
                     decoration: InputDecoration(
                       labelText: 'Especialidad',
                       prefixIcon: Icon(Icons.medical_information),
@@ -128,6 +142,7 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                     requerido: true,
                     minlongitud: 5,
                     maxlongitud: 40,
+                    email: true,
                   ),
 
                   SizedBox(height: 15),
@@ -160,6 +175,7 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
 
                                 final vet = VeterinarioModel(
                                   vetNombre: nombreController.text,
+                                  vetCedula: cedulaController.text,
                                   vetEspecialidad: especialidadSeleccionada!,
                                   vetTelefono: telefonoController.text,
                                   vetEmail: emailController.text,
@@ -167,9 +183,82 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
                                 );
 
                                 if (esEditar) {
+                                  final cedulaUnica = await repo
+                                      .cedulaUnicaEditar(
+                                        cedulaController.text,
+                                        veterinarioGlobal!.vetId!,
+                                      );
+
+                                  final celularUnico = await repo
+                                      .celularUnicoEditar(
+                                        telefonoController.text,
+                                        veterinarioGlobal!.vetId!,
+                                      );
+
+                                  final correoUnico = await repo
+                                      .correoUnicoEditar(
+                                        emailController.text,
+                                        veterinarioGlobal!.vetId!,
+                                      );
+
+                                  if (!cedulaUnica) {
+                                    mostrarError(
+                                      context,
+                                      'Ya existe un veterinario con esta cédula',
+                                    );
+                                    return;
+                                  }
+
+                                  if (!celularUnico) {
+                                    mostrarError(
+                                      context,
+                                      "Ya existe un veterinario con este número celular ",
+                                    );
+                                    return;
+                                  }
+
+                                  if (!correoUnico) {
+                                    mostrarError(
+                                      context,
+                                      "Ya existe un veterinario con este correo",
+                                    );
+                                    return;
+                                  }
                                   vet.vetId = veterinarioGlobal!.vetId;
                                   await repo.edit(vet);
                                 } else {
+                                  final cedulaUnica = await repo.cedulaUnica(
+                                    cedulaController.text,
+                                  );
+                                  final celularUnico = await repo.celularUnico(
+                                    telefonoController.text,
+                                  );
+                                  final correoUnico = await repo.correoUnico(
+                                    emailController.text,
+                                  );
+                                  if (!cedulaUnica) {
+                                    mostrarError(
+                                      context,
+                                      'Ya existe un veterinario con esta cédula',
+                                    );
+                                    return;
+                                  }
+
+                                  if (!celularUnico) {
+                                    mostrarError(
+                                      context,
+                                      'Ya existe un veterinario con este celular',
+                                    );
+                                    return;
+                                  }
+
+                                  if (!correoUnico) {
+                                    mostrarError(
+                                      context,
+                                      'Ya existe un veterinario con este correo',
+                                    );
+                                    return;
+                                  }
                                   await repo.create(vet);
                                 }
 
@@ -211,6 +300,22 @@ class _VeterinarianFormScreenState extends State<VeterinarianFormScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void mostrarError(BuildContext context, String mensaje) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(children: [Text('Información')]),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Aceptar'),
+          ),
+        ],
       ),
     );
   }

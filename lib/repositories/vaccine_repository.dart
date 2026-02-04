@@ -63,4 +63,26 @@ class VacunaRepository {
 
     return response.map((e) => VacunaModel.fromMap(e)).toList();
   }
+
+  Future<int> obtenerTotalVacunasVeterinario(int dueId) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      columns: ['COUNT(*) AS total'],
+      where: 'vet_id = ?',
+      whereArgs: [dueId],
+    );
+    return result.first['total'] as int;
+  }
+
+  Future<int> obtenerTotalVacunasMascota(int masId) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      columns: ['COUNT(*) AS total'],
+      where: 'masc_id = ?',
+      whereArgs: [masId],
+    );
+    return result.first['total'] as int;
+  }
 }

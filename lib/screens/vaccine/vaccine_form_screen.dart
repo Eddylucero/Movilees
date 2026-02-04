@@ -19,7 +19,6 @@ class VaccineFormScreen extends StatefulWidget {
 class _VaccineFormScreenState extends State<VaccineFormScreen> {
   final formVacuna = GlobalKey<FormState>();
   final nombreController = TextEditingController();
-  // final fechaController = TextEditingController();
   final dosisController = TextEditingController();
   final observacionesController = TextEditingController();
 
@@ -50,7 +49,7 @@ class _VaccineFormScreenState extends State<VaccineFormScreen> {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)!.settings.arguments;
 
-    if (args != null) {
+    if (args != null && vacuna == null) {
       vacuna = args as VacunaModel;
       nombreController.text = vacuna!.vacNombre;
       dosisController.text = vacuna!.vacDosis.toString();

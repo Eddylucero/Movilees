@@ -16,7 +16,6 @@ class OwnerModel {
     required this.dueEmail,
   });
 
-  // Convertir de Map a Clase (SELECT)
   factory OwnerModel.fromMap(Map<String, dynamic> data) {
     return OwnerModel(
       dueId: data['due_id'],
@@ -28,7 +27,6 @@ class OwnerModel {
     );
   }
 
-  // Convertir de Clase a Map (INSERT, UPDATE)
   Map<String, dynamic> toMap() {
     return {
       'due_id': dueId,

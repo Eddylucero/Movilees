@@ -38,9 +38,29 @@ class OwnerRepository {
   Future<bool> cedulaUnica(String cedula) async {
     final db = await database.db;
     final result = await db.query(
-      'dueno',
+      tableName,
       where: 'due_cedula = ?',
       whereArgs: [cedula],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> celularUnico(String telefono) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      where: 'due_telefono = ?',
+      whereArgs: [telefono],
+    );
+    return result.isEmpty;
+  }
+
+  Future<bool> correoUnico(String email) async {
+    final db = await database.db;
+    final result = await db.query(
+      tableName,
+      where: 'due_email = ?',
+      whereArgs: [email],
     );
     return result.isEmpty;
   }
@@ -48,50 +68,41 @@ class OwnerRepository {
   Future<bool> cedulaUnicaEditar(String cedula, int dueId) async {
     final db = await database.db;
     final result = await db.query(
-      'dueno',
+      tableName,
       where: 'due_cedula = ? AND due_id != ?',
       whereArgs: [cedula, dueId],
     );
     return result.isEmpty;
   }
 
-  Future<bool> celularUnico(String celular, int dueId) async {
+  Future<bool> celularUnicoEditar(String telefono, int dueId) async {
     final db = await database.db;
     final result = await db.query(
-      'dueno',
-      where: 'due_celular = ?',
-      whereArgs: [celular],
+      tableName,
+      where: 'due_telefono = ? AND due_id != ?',
+      whereArgs: [telefono, dueId],
     );
     return result.isEmpty;
   }
 
-  Future<bool> celularUnicoEditar(String celular, int dueId) async {
+  Future<bool> correoUnicoEditar(String email, int dueId) async {
     final db = await database.db;
     final result = await db.query(
-      'dueno',
-      where: 'due_celular = ? AND due_id != ?',
-      whereArgs: [celular, dueId],
+      tableName,
+      where: 'due_email = ? AND due_id != ?',
+      whereArgs: [email, dueId],
     );
     return result.isEmpty;
   }
 
-  Future<bool> correoUnico(String correo, int dueId) async {
+  Future<int> obtenerTotalMascotasDueno(int dueId) async {
     final db = await database.db;
     final result = await db.query(
-      'dueno',
-      where: 'due_correo = ?',
-      whereArgs: [correo],
+      'mascota',
+      columns: ['COUNT(*) AS total'],
+      where: 'due_id = ?',
+      whereArgs: [dueId],
     );
-    return result.isEmpty;
-  }
-
-  Future<bool> correoUnicoEditar(String correo, int dueId) async {
-    final db = await database.db;
-    final result = await db.query(
-      'dueno',
-      where: 'due_correo = ? AND due_id != ?',
-      whereArgs: [correo, dueId],
-    );
-    return result.isEmpty;
+    return result.first['total'] as int;
   }
 }

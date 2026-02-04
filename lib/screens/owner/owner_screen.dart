@@ -94,7 +94,18 @@ class _OwnerScreenState extends State<OwnerScreen> {
                           ),
                           IconButton(
                             icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => eliminarOwner(owner.dueId!),
+                            onPressed: () async {
+                              final totalMascotas = await repo
+                                  .obtenerTotalMascotasDueno(owner.dueId!);                              
+                              if (totalMascotas > 0) {
+                                mostrarError(
+                                  context,
+                                  "Existen mascotas registradas con este dueño.Primero elimine las mascotas para eliminar al dueño.",
+                                );
+                                return;
+                              }
+                              eliminarOwner(owner.dueId!);
+                            },
                           ),
                         ],
                       ),
@@ -111,6 +122,22 @@ class _OwnerScreenState extends State<OwnerScreen> {
         backgroundColor: Colors.teal,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  void mostrarError(BuildContext context, String mensaje) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(children: [Text('Información')]),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Aceptar'),
+          ),
+        ],
       ),
     );
   }

@@ -114,9 +114,9 @@ class _OwnerFormScreenState extends State<OwnerFormScreen> {
                     requerido: true,
                     minlongitud: 5,
                     maxlongitud: 40,
+                    email: true,
                   ),
                   SizedBox(height: 20),
-
                   Row(
                     children: [
                       Expanded(
@@ -128,82 +128,99 @@ class _OwnerFormScreenState extends State<OwnerFormScreen> {
                           ),
                           child: TextButton(
                             onPressed: () async {
-                              if (formOwner.currentState!.validate()) {
-                                final repo = OwnerRepository();
-                                final data = OwnerModel(
-                                  dueNombre: nombreController.text,
-                                  dueCedula: cedulaController.text,
-                                  dueTelefono: telefonoController.text,
-                                  dueDireccion: direccionController.text,
-                                  dueEmail: emailController.text,
-                                );
-                                if (esEditar) {
-                                  final esUnicaEditar = await repo
-                                      .cedulaUnicaEditar(
-                                        cedulaController.text,
-                                        owner!.dueId!,
-                                      );
+                              if (!formOwner.currentState!.validate()) return;
 
-                                  if (!esUnicaEditar) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text('Error'),
-                                        content: const Text(
-                                          'Ya existe un dueño con esta cédula',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: const Text('Aceptar'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                    return;
-                                  }
+                              final repo = OwnerRepository();
 
-                                  data.dueId = owner!.dueId;
-                                  await repo.edit(data);
-                                } else {
-                                  final cedula = cedulaController.text;
-                                  final celular = telefonoController.text;
-                                  final email = emailController.text;
-                                  final esUnica = await repo.cedulaUnica(
-                                    cedula,
-                                  );
-                                  final celularUnico = await repo.celularUnico(
-                                    celular,
-                                    owner!.dueId!,
-                                  );
-                                  final correoUnico = await repo.correoUnico(
-                                    email,
-                                    owner!.dueId!,
-                                  );
-                                  if (!esUnica) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Text('Error'),
-                                        content: Text(
-                                          'Ya existe un dueño con esta cédula',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text('Aceptar'),
-                                          ),
-                                        ],
-                                      ),
+                              final data = OwnerModel(
+                                dueNombre: nombreController.text,
+                                dueCedula: cedulaController.text,
+                                dueTelefono: telefonoController.text,
+                                dueDireccion: direccionController.text,
+                                dueEmail: emailController.text,
+                              );
+
+                              if (esEditar) {
+                                final cedulaUnica = await repo
+                                    .cedulaUnicaEditar(
+                                      cedulaController.text,
+                                      owner!.dueId!,
                                     );
-                                    return;
-                                  }
-                                  await repo.create(data);
+
+                                final celularUnico = await repo
+                                    .celularUnicoEditar(
+                                      telefonoController.text,
+                                      owner!.dueId!,
+                                    );
+
+                                final correoUnico = await repo
+                                    .correoUnicoEditar(
+                                      emailController.text,
+                                      owner!.dueId!,
+                                    );
+
+                                if (!cedulaUnica) {
+                                  mostrarError(
+                                    context,
+                                    'Ya existe un dueño con esta cédula',
+                                  );
+                                  return;
                                 }
-                                Navigator.pop(context);
+
+                                if (!celularUnico) {
+                                  mostrarError(
+                                    context,
+                                    "Ya existe un dueño con este número celular ",
+                                  );
+                                  return;
+                                }
+
+                                if (!correoUnico) {
+                                  mostrarError(
+                                    context,
+                                    "Ya existe un dueño con este correo",
+                                  );
+                                }
+
+                                data.dueId = owner!.dueId;
+                                await repo.edit(data);
+                              } else {
+                                final cedulaUnica = await repo.cedulaUnica(
+                                  cedulaController.text,
+                                );
+                                final celularUnico = await repo.celularUnico(
+                                  telefonoController.text,
+                                );
+                                final correoUnico = await repo.correoUnico(
+                                  emailController.text,
+                                );
+                                if (!cedulaUnica) {
+                                  mostrarError(
+                                    context,
+                                    'Ya existe un dueño con esta cédula',
+                                  );
+                                  return;
+                                }
+
+                                if (!celularUnico) {
+                                  mostrarError(
+                                    context,
+                                    'Ya existe un dueño con este celular',
+                                  );
+                                  return;
+                                }
+
+                                if (!correoUnico) {
+                                  mostrarError(
+                                    context,
+                                    'Ya existe un dueño con este correo',
+                                  );
+                                  return;
+                                }
+                                await repo.create(data);
                               }
+
+                              Navigator.pop(context);
                             },
                             child: const Text(
                               'Aceptar',
@@ -240,6 +257,22 @@ class _OwnerFormScreenState extends State<OwnerFormScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void mostrarError(BuildContext context, String mensaje) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(children: [Text('Información')]),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Aceptar'),
+          ),
+        ],
       ),
     );
   }
