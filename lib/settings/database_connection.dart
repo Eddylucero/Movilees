@@ -22,7 +22,7 @@ class DatabaseConnection {
     return await openDatabase(
       rutaFinal,
       version: 1,
-      // AQUI SE ACTIVAN CLAVES FORÁNEAS
+     
       onConfigure: (Database db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },

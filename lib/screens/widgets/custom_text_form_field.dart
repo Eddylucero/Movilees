@@ -67,13 +67,26 @@ class CustomTextFormField extends StatelessWidget {
           return 'Máximo $maxlongitud caracteres.';
         }
 
-        if (numerico && int.tryParse(v!) == null) {
-          return 'Debe ingresar un número valido';
+        if (numerico) {
+          final numero = int.tryParse(v!);
+          if (numero == null) {
+            return 'Debe ingresar un número válido';
+          }
+          if (numero < 0) {
+            return 'No se permiten números negativos';
+          }
         }
 
-        if (decimal && double.tryParse(v!) == null) {
-          return 'Debe ingresar un número decimal válido';
+        if (decimal) {
+          final numero = double.tryParse(v!);
+          if (numero == null) {
+            return 'Debe ingresar un número decimal válido';
+          }
+          if (numero < 0) {
+            return 'No se permiten números negativos';
+          }
         }
+
         if (decimal && maxDecimales != null) {
           final partes = v!.split('.');
           if (partes.length > 1 && partes[1].length > maxDecimales!) {
@@ -86,8 +99,11 @@ class CustomTextFormField extends StatelessWidget {
             return 'Máximo $maxEnteros dígitos en la parte entera';
           }
         }
-        if (longitud != null && v!.length != longitud) {
-          return '$label debe tener $longitud dígitos';
+        if (longitud != null && v != null) {
+          final soloDigitos = v.replaceAll(RegExp(r'\D'), '');
+          if (soloDigitos.length != longitud) {
+            return '$label debe tener $longitud dígitos válidos';
+          }
         }
         if (email && v != null && v.isNotEmpty) {
           if (!EmailValidator.validate(v)) {
